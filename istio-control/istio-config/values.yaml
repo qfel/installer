@@ -38,3 +38,13 @@ galley:
   # "security" and value "S1".
   podAntiAffinityLabelSelector: []
   podAntiAffinityTermLabelSelector: []
+
+  csm:
+    enabled: false
+    # GCP project ID. Needs to be set if CSM is enabled.
+    projectID: ''
+    mcpSink:
+      # TODO(qfel): Provide a good default.
+      address: ''
+    discovery:
+      address: trafficdirector.googleapis.com:443

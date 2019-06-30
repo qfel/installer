@@ -69,12 +69,30 @@ spec:
 {{- if $.Values.global.logging.level }}
           - --log_output_level={{ $.Values.global.logging.level }}
 {{- end}}
+{{- if $.Values.galley.csm.enabled }}
+          - --sinkAuthMode=GOOGLE
+          {{- if ne $.Values.galley.csm.mcpSink.address "" }}
+          - --sinkAddress={{ $.Values.galley.csm.mcpSink.address }}
+          {{- end }}
+          - --sinkMeta=project_id={{ $.Values.galley.csm.projectID }}
+          - --excludedResourceKinds=Pod,Node,Endpoints
+{{- end }}
+          env:
+{{- if $.Values.galley.csm.enabled }}
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /etc/creds/key.json
+{{- end }}
           volumeMounts:
-  {{- if .Values.global.configValidation }}
+{{- if .Values.global.configValidation }}
           - name: istio-certs
             mountPath: /etc/certs
             readOnly: true
-  {{- end }}
+{{- end }}
+{{- if $.Values.galley.csm.enabled }}
+          - name: creds
+            mountPath: /etc/creds
+            readOnly: true
+{{- end}}
           - name: config
             mountPath: /etc/config
             readOnly: true
@@ -170,6 +188,11 @@ spec:
       - name: envoy-config
         configMap:
           name: galley-envoy-config
+  {{- end }}
+  {{- if $.Values.galley.csm.enabled }}
+      - name: creds
+        secret:
+          secretName: galley-key
   {{- end }}
       - name: config
         configMap:
