@@ -175,8 +175,6 @@ template: |
   {{- end }}
     env:
   {{- if $.Values.galley.csm.enabled }}
-    - name: GOOGLE_APPLICATION_CREDENTIALS
-      value: /etc/creds/key.json
     - name: ISTIO_BOOTSTRAP
       value: /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json
     {{- /* TODO(qfel): Understand this better. Where can it be changed? */}}
@@ -280,11 +278,6 @@ template: |
   {{- end }}
     {{  end -}}
     volumeMounts:
-    {{- if $.Values.galley.csm.enabled }}
-    - name: creds
-      mountPath: /etc/creds
-      readOnly: true
-    {{- end }}
     {{ if (isset .ObjectMeta.Annotations `sidecar.istio.io/bootstrapOverride`) }}
     - mountPath: /etc/istio/custom-bootstrap
       name: custom-bootstrap-volume
@@ -319,11 +312,6 @@ template: |
       {{ end }}
       {{- end }}
   volumes:
-  {{- if $.Values.galley.csm.enabled }}
-  - name: creds
-    secret:
-    secretName: galley-key
-  {{- end }}
   {{- if (isset .ObjectMeta.Annotations `sidecar.istio.io/bootstrapOverride`) }}
   - name: custom-bootstrap-volume
     configMap:
