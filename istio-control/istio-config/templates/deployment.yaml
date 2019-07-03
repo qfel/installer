@@ -70,9 +70,9 @@ spec:
           - --log_output_level={{ $.Values.global.logging.level }}
 {{- end}}
 {{- if $.Values.galley.csm.enabled }}
-          - --sinkAuthMode=GOOGLE
           {{- if ne $.Values.galley.csm.mcpSink.address "" }}
           - --sinkAddress={{ $.Values.galley.csm.mcpSink.address }}
+          - --sinkAuthMode=GOOGLE
           {{- end }}
           - --sinkMeta=project_id={{ $.Values.galley.csm.projectID }}
           - --excludedResourceKinds=Pod,Node,Endpoints
