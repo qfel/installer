@@ -76,6 +76,7 @@ spec:
           {{- end }}
           - --sinkMeta=project_id={{ $.Values.galley.csm.projectID }}
           - --excludedResourceKinds=Pod,Node,Endpoints
+          - --enableServiceDiscovery
 {{- end }}
           volumeMounts:
 {{- if .Values.global.configValidation }}
