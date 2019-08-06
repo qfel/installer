@@ -75,7 +75,7 @@ spec:
           - --sinkAddress={{ $.Values.galley.csm.mcpSink.address }}
           - --sinkAuthMode=GOOGLE
           {{- end }}
-          - --sinkMeta=project_id={{ $.Values.galley.csm.projectID }}
+          - --sinkMeta=project_id={{ $.Values.galley.csm.projectID }},trace=927534925372
           - --excludedResourceKinds=Pod,Node,Endpoints
           - --enableServiceDiscovery
 {{- end }}
