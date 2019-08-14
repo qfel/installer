@@ -175,9 +175,10 @@ template: |
   {{- if $.Values.galley.csm.enabled }}
     - name: ISTIO_BOOTSTRAP
       value: /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json
-    {{- /* TODO(qfel): Understand this better. Where can it be changed? */}}
     - name: ISTIO_META_TRAFFICDIRECTOR_INTERCEPTION_PORT
       value: "15001"
+    - name: ISTIO_META_TRAFFICDIRECTOR_ACCESS_LOG_PATH
+      value: /dev/stdout
   {{- end }}
     - name: POD_NAME
       valueFrom:
