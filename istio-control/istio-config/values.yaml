@@ -38,3 +38,6 @@ galley:
   # "security" and value "S1".
   podAntiAffinityLabelSelector: []
   podAntiAffinityTermLabelSelector: []
+
+  mcpSinkAddress: ''
+  traceOwner: ''

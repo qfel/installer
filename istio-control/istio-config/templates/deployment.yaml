@@ -57,6 +57,7 @@ spec:
           - --insecure=true
   {{- if .Values.global.configValidation }}
           - --enable-validation=true
+          - --enable-reconcileWebhookConfiguration=false  {{/* Relies on config validation, so disable. */}}
   {{- else }}
           - --enable-validation=false
   {{- end }}
@@ -69,6 +70,22 @@ spec:
 {{- if $.Values.global.logging.level }}
           - --log_output_level={{ $.Values.global.logging.level }}
 {{- end}}
+          {{- if ne $.Values.galley.mcpSinkAddress "" }}
+          - --sinkAddress={{ $.Values.galley.mcpSinkAddress }}
+          - --sinkAuthMode=GOOGLE
+          {{- end }}
+          - --sinkMeta=project_id=$(PROJECT_ID)
+            {{- if $.Values.galley.traceOwner -}}
+            ,trace={{ $.Values.galley.traceOwner }}
+            {{- end }}
+          - --excludedResourceKinds=Pod,Node,Endpoints
+          - --enableServiceDiscovery
+          env:
+          - name: PROJECT_ID
+            valueFrom:
+              configMapKeyRef:
+                name: asm-config
+                key: projectID
           volumeMounts:
   {{- if .Values.global.configValidation }}
           - name: istio-certs

@@ -58,6 +58,12 @@ sidecarInjectorWebhook:
   neverInjectSelector: []
   alwaysInjectSelector: []
 
+  discoveryAddress: ''
+
+  # Passed to TrafficDirector as TRAFFICDIRECTOR_ACCESS_LOG_PATH, which in
+  # turn sets access log path in Envoy.
+  accessLogPath: ''
+
 # If set, no iptable init will be added. It assumes CNI is installed.
 # TODO: rename to 'enableIptables' or add 'interceptionMode: CNI'
 istio_cni:

@@ -1,0 +1,26 @@
+#!/bin/bash
+exec > asm/istio-asm-gen.yaml
+if [[ -z "$@" ]]; then
+  ARGS=(
+    global.hub=istio
+    global.tag=1.3.0
+    global.imagePullPolicy=Always
+    global.configValidation=false
+    global.istioNamespace=istio-asm
+    global.configNamespace=istio-asm
+    sidecarInjectorWebhook.selfSigned=true
+    sidecarInjectorWebhook.injectLabel=istio-env
+    galley.mcpSinkAddress=meshconfig.googleapis.com:443
+    sidecarInjectorWebhook.discoveryAddress=trafficdirector.googleapis.com:443
+  )
+else
+  ARGS=("$@")
+fi
+for KV in "${ARGS[@]}"; do
+  OVERRIDES+=(--set-string "${KV}")
+done
+SED=(sed 's/ *$//')
+bin/iop istio-asm citadel security/citadel -t "${OVERRIDES[@]}" | "${SED[@]}"
+bin/iop istio-asm istio-config istio-control/istio-config -t "${OVERRIDES[@]}" | "${SED[@]}"
+bin/iop istio-asm istio-autoinject istio-control/istio-autoinject -t "${OVERRIDES[@]}" | "${SED[@]}"
+bin/iop istio-asm istio-discovery istio-control/istio-discovery -t "${OVERRIDES[@]}" | "${SED[@]}"

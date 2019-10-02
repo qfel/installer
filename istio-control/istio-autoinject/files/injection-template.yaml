@@ -14,8 +14,6 @@ template: |
     - "/usr/local/bin/istio-iptables.sh"
     - "-p"
     - 15001
-    - "-z"
-    - "15006"
     - "-u"
     - 1337
     - "-m"
@@ -106,7 +104,7 @@ template: |
     - --parentShutdownDuration
     - "{{ formatDuration .ProxyConfig.ParentShutdownDuration }}"
     - --discoveryAddress
-    - "{{ annotation .ObjectMeta `sidecar.istio.io/discoveryAddress` .ProxyConfig.DiscoveryAddress }}"
+    - {{ $.Values.sidecarInjectorWebhook.discoveryAddress | toYaml }}
   {{- if eq .Values.global.proxy.tracer "lightstep" }}
     - --lightstepAddress
     - "{{ .ProxyConfig.GetTracing.GetLightstep.GetAddress }}"
@@ -170,6 +168,12 @@ template: |
     - --templateFile=/etc/istio/custom-bootstrap/envoy_bootstrap.json
   {{- end }}
     env:
+    - name: ISTIO_BOOTSTRAP
+      value: /var/lib/istio/envoy/gcp_envoy_bootstrap_tmpl.json
+    - name: ISTIO_META_TRAFFICDIRECTOR_INTERCEPTION_PORT
+      value: "15001"
+    - name: ISTIO_META_TRAFFICDIRECTOR_ACCESS_LOG_PATH
+      value: {{.Values.sidecarInjectorWebhook.accessLogPath}}
     - name: POD_NAME
       valueFrom:
         fieldRef:
@@ -196,8 +200,10 @@ template: |
           fieldPath: metadata.namespace
     - name: ISTIO_META_INTERCEPTION_MODE
       value: "{{ or (index .ObjectMeta.Annotations `sidecar.istio.io/interceptionMode`) .ProxyConfig.InterceptionMode.String }}"
-    - name: ISTIO_META_INCLUDE_INBOUND_PORTS
+    - name: ISTIO_META_TRAFFICDIRECTOR_INBOUND_BACKEND_PORTS
       value: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/includeInboundPorts` (applicationPorts .Spec.Containers) }}"
+    - name: ISTIO_META_TRAFFICDIRECTOR_WORKLOAD_NAME
+      value: csm-auth-{{ .DeploymentMeta.Namespace }}
     {{- if .Values.global.network }}
     - name: ISTIO_META_NETWORK
       value: "{{ .Values.global.network }}"
