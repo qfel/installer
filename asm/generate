@@ -1,13 +1,12 @@
 #!/bin/bash
-exec > asm/istio-asm-gen.yaml
 if [[ -z "$@" ]]; then
   ARGS=(
     global.hub=istio
     global.tag=1.3.0
     global.imagePullPolicy=Always
     global.configValidation=false
-    global.istioNamespace=istio-asm
-    global.configNamespace=istio-asm
+    global.istioNamespace=istio-control
+    global.configNamespace=istio-control
     sidecarInjectorWebhook.selfSigned=true
     sidecarInjectorWebhook.injectLabel=istio-env
     galley.mcpSinkAddress=meshconfig.googleapis.com:443
@@ -20,7 +19,7 @@ for KV in "${ARGS[@]}"; do
   OVERRIDES+=(--set-string "${KV}")
 done
 SED=(sed 's/ *$//')
-bin/iop istio-asm citadel security/citadel -t "${OVERRIDES[@]}" | "${SED[@]}"
-bin/iop istio-asm istio-config istio-control/istio-config -t "${OVERRIDES[@]}" | "${SED[@]}"
-bin/iop istio-asm istio-autoinject istio-control/istio-autoinject -t "${OVERRIDES[@]}" | "${SED[@]}"
-bin/iop istio-asm istio-discovery istio-control/istio-discovery -t "${OVERRIDES[@]}" | "${SED[@]}"
+bin/iop istio-system citadel security/citadel -t "${OVERRIDES[@]}" | "${SED[@]}" > asm/citadel-gen.yaml
+bin/iop istio-control istio-config istio-control/istio-config -t "${OVERRIDES[@]}" | "${SED[@]}" > asm/istio-config-gen.yaml
+bin/iop istio-control istio-autoinject istio-control/istio-autoinject -t "${OVERRIDES[@]}" | "${SED[@]}" > asm/istio-autoinject-gen.yaml
+bin/iop istio-control istio-discovery istio-control/istio-discovery -t "${OVERRIDES[@]}" | "${SED[@]}" > asm/istio-discovery-gen.yaml

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: asm-config
+  namespace: istio-control
+data:
+  projectID: my-project-here
+  IDNS: my-project-here.svc.id.goog
+  clusterURL: my-gke-cluster-url
+  envoyAccessLogPath: /dev/stdout
